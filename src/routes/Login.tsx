@@ -1,22 +1,33 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useAuthStore } from "../stores/authStore";
+import { exampleDB, User, setUser, useAuthStore } from "../stores/authStore";
 import "../styles/Login.css";
 
+const foundUser = (input_mail_we_check: string) => {
+  const tempUser = exampleDB.find(element => (element.email === input_mail_we_check))
+  if (tempUser === undefined) {
+    const err = "no user with this email found"
+    return err
+  }
+  return tempUser
+}
+
 export function Login() {
-  const { token, setEmail, setToken } = useAuthStore();
+  const { token, setToken } = useAuthStore();
   const [emailInput, setEmailInput] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (emailInput === "dan@devhausleipzig.de" && password === "test123") {
+    if (JSON.stringify(typeof(foundUser(emailInput))) === "User")
+    {
       setToken("test-token");
-      setEmail(emailInput);
+      setUser(currentUser)
       navigate("/");
     }
-    setError("Incorrect Credentials");
+    setError("Email and Password dont match");
   }
 
   if (token) return <Navigate to="/" replace />;
